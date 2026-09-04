@@ -1,3 +1,10 @@
 spring:
   application:
-    name: ms-account-reservation
+    name: ${APP_NAME}
+  datasource:
+    password: ${DB_PASSWORD}
+    username: ${DB_USER}
+    url: ${DB_URL}
+    driver-class-name: ${DB_DRIVER}
+server:
+  port: ${APP_PORT}
