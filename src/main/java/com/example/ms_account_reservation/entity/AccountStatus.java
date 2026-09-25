@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@Table(name="account_status")
+@Table(name = "account_status")
 @Getter
 @Setter
 @NoArgsConstructor
