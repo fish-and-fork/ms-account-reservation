@@ -1,0 +1,69 @@
+databaseChangeLog:
+  -
+  - changeSet:
+      id: 005-add-timestamptz-columns
+      author: fish-and-fork
+      changes:
+        - addColumn:
+            tableName: account_status
+            # пока без "nullable: false" для account_status, т.к. уже есть данные (см. следующие changeSet)
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+        - addColumn:
+            tableName: client
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+        - addColumn:
+            tableName: account
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 006-backfill-timestamptz
+      author: fish-and-fork
+      changes:
+        - update:
+            tableName: account_status
+            columns:
+              - column:
+                  name: created_at
+                  valueDate: current_datetime
+              - column:
+                  name: updated_at
+                  valueDate: current_datetime
+
+  - changeSet:
+      id: 007-add-not-null-timestamptz
+      author: fish-and-fork
+      changes:
+        - addNotNullConstraint:
+            tableName: account_status
+            columnName: created_at
+            columnDataType: timestamp with time zone
+        - addNotNullConstraint:
+            tableName: account_status
+            columnName: updated_at
+            columnDataType: timestamp with time zone

@@ -1,0 +1,104 @@
+databaseChangeLog:
+
+- changeSet:
+    id: 001-create_account_status
+    author: fish-and-fork
+    preConditions:
+      - onFail: MARK_RAN
+      - not:
+          - tableExists:
+              tableName: district
+    changes:
+      - createTable:
+          tableName: account_status
+          columns:
+            - column:
+                name: id
+                type: INTEGER
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+            - column:
+                name: name
+                type: TEXT
+            - column:
+                name: description
+                type: TEXT
+
+- changeSet:
+    id: 002-create_client
+    author: fish-and-fork
+    preConditions:
+      - onFail: MARK_RAN
+      - not:
+          - tableExists:
+              tableName: district
+    changes:
+      - createTable:
+          tableName: client
+          columns:
+            - column:
+                name: id
+                type: UUID
+                constraints:
+                  primaryKey: true
+                defaultValueComputed: gen_random_uuid()
+            - column:
+                name: full_name
+                type: TEXT
+            - column:
+                name: citizenship
+                type: TEXT
+            - column:
+                name: client_type
+                type: TEXT
+            - column:
+                name: document_number
+                type: TEXT
+            - column:
+                name: document_series
+                type: TEXT
+            - column:
+                name: document_type
+                type: TEXT
+            - column:
+                name: mdm_code
+                type: BIGINT
+
+- changeSet:
+    id: 003-create-account
+    author: fish-and-fork
+    preConditions:
+      - onFail: MARK_RAN
+      - not:
+          - tableExists:
+              tableName: district
+    changes:
+      - createTable:
+          tableName: account
+          columns:
+            - column:
+                name: id
+                type: UUID
+                defaultValueComputed: gen_random_uuid()
+                constraints:
+                  primaryKey: true
+            - column:
+                name: status_id
+                type: INT
+                constraints:
+                  nullable: false
+                  foreignKeyName: fk_account_status
+                  references: account_status(id)
+            - column:
+                name: client_id
+                type: UUID
+                constraints:
+                  foreignKeyName: fk_account_client
+                  references: client(id)
+            - column:
+                name: account_type
+                type: TEXT
+            - column:
+                name: currency_code
+                type: TEXT
