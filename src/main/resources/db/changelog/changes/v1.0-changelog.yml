@@ -3,6 +3,11 @@ databaseChangeLog:
 - changeSet:
     id: 001-create_account_status
     author: fish-and-fork
+    preConditions:
+      - onFail: MARK_RAN
+      - not:
+          - tableExists:
+              tableName: district
     changes:
       - createTable:
           tableName: account_status
@@ -23,6 +28,11 @@ databaseChangeLog:
 - changeSet:
     id: 002-create_client
     author: fish-and-fork
+    preConditions:
+      - onFail: MARK_RAN
+      - not:
+          - tableExists:
+              tableName: district
     changes:
       - createTable:
           tableName: client
@@ -58,6 +68,11 @@ databaseChangeLog:
 - changeSet:
     id: 003-create-account
     author: fish-and-fork
+    preConditions:
+      - onFail: MARK_RAN
+      - not:
+          - tableExists:
+              tableName: district
     changes:
       - createTable:
           tableName: account
