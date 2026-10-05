@@ -3,6 +3,28 @@ databaseChangeLog:
   - changeSet:
       id: 005-add-timestamptz-columns
       author: fish-and-fork
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: account_status
+                columnName: created_at
+            - columnExists:
+                tableName: account_status
+                columnName: updated_at
+            - columnExists:
+                tableName: client
+                columnName: created_at
+            - columnExists:
+                tableName: client
+                columnName: updated_at
+            - columnExists:
+                tableName: account
+                columnName: created_at
+            - columnExists:
+                tableName: account
+                columnName: updated_at
+
       changes:
         - addColumn:
             tableName: account_status

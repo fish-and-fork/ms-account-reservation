@@ -8,6 +8,10 @@ databaseChangeLog:
       - not:
           - tableExists:
               tableName: account_status
+          - columnExists:
+              tableName: account_status
+              columnName: id
+          - columnExists:
     changes:
       - createTable:
           tableName: account_status
