@@ -7,7 +7,7 @@ databaseChangeLog:
       - onFail: MARK_RAN
       - not:
           - tableExists:
-              tableName: district
+              tableName: account_status
     changes:
       - createTable:
           tableName: account_status
@@ -32,7 +32,7 @@ databaseChangeLog:
       - onFail: MARK_RAN
       - not:
           - tableExists:
-              tableName: district
+              tableName: client
     changes:
       - createTable:
           tableName: client
@@ -72,7 +72,7 @@ databaseChangeLog:
       - onFail: MARK_RAN
       - not:
           - tableExists:
-              tableName: district
+              tableName: account
     changes:
       - createTable:
           tableName: account
