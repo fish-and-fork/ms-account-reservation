@@ -23,8 +23,14 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "full_name")
-    private String fullName;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "middle_name")
+    private String middleName;
 
     @Column(name = "citizenship")
     private String citizenship;

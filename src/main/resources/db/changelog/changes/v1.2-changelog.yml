@@ -1,5 +1,5 @@
 databaseChangeLog:
-  -
+
   - changeSet:
       id: 005-add-timestamptz-columns
       author: fish-and-fork
