@@ -1,5 +1,6 @@
 package com.example.ms_account_reservation.entity;
 
+import com.example.ms_account_reservation.model.ClientType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,8 +36,9 @@ public class Client {
     @Column(name = "citizenship")
     private String citizenship;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "client_type")
-    private String clientType;
+    private ClientType clientType;
 
     @Column(name = "document_number")
     private String documentNumber;

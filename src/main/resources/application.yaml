@@ -18,6 +18,8 @@ spring:
     open-in-view: false
 server:
   port: ${APP_PORT}
+  servlet:
+    context-path: /api/v1
 management:
   server:
     port: ${MANAGEMENT_PORT}
@@ -25,3 +27,16 @@ management:
     web:
       exposure:
         include: health, threaddump
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG
+      hibernate:
+        SQL: DEBUG
+springdoc:
+  api-docs:
+    enabled: false # отключает автоматическую генерацию из аннотаций, т.к. источник - yaml
+  swagger-ui:
+    url: /ms-upgrade-api.yaml
