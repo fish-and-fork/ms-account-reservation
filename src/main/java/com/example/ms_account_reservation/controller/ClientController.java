@@ -34,4 +34,16 @@ public class ClientController implements ClientsApi {
         ClientResponse response = clientService.get(clientId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @Override
+    public ResponseEntity<ClientResponse> updateClient(UUID clientId, ClientCreateRequest clientCreateRequest) {
+        ClientResponse response = clientService.update(clientId, clientCreateRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteClientById(UUID clientId) {
+        clientService.delete(clientId);
+        return ResponseEntity.noContent().build();
+    }
 }

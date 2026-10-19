@@ -49,7 +49,7 @@ public class Client {
     @Column(name = "document_type")
     private String documentType;
 
-    @Column(name = "mdm_code")
+    @Column(name = "mdm_code", unique = true)
     private Long mdmCode;
 
     @CreationTimestamp

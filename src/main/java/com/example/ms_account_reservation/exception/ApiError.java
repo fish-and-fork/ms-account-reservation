@@ -11,6 +11,7 @@ public enum ApiError {
     INVALID_REQUEST_PARAMETER("INVALID_REQUEST_PARAMETER", "Неверный формат параметра запроса", HttpStatus.BAD_REQUEST),
     CLIENT_NOT_FOUND("CLIENT_NOT_FOUND", "Клиент не найден", HttpStatus.NOT_FOUND),
     CLIENT_MDM_EXISTS("CLIENT_MDM_EXISTS", "Клиент с таким mdmId уже существует", HttpStatus.CONFLICT),
+    CLIENT_HAS_ACTIVE_ACCOUNTS("CLIENT_HAS_ACTIVE_ACCOUNTS", "У клиента есть активные счета", HttpStatus.CONFLICT)
     ;
 
     private final String errorCode;

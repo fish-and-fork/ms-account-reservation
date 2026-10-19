@@ -4,10 +4,7 @@ import com.example.dto.ClientCreateRequest;
 import com.example.dto.ClientResponse;
 import com.example.ms_account_reservation.entity.Client;
 import com.example.ms_account_reservation.model.ClientType;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-import org.mapstruct.ValueMapping;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ClientMapper {
@@ -25,4 +22,10 @@ public interface ClientMapper {
     @ValueMapping(source = "ACTIVE", target = "ACTIVE")
     @ValueMapping(source = "BLOCKED", target = "BLOCKED")
     ClientResponse.ClientTypeEnum mapClientType(ClientType clientType);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "clientType", constant = "ACTIVE")
+    void updateEntity(ClientCreateRequest request, @MappingTarget Client client);
 }

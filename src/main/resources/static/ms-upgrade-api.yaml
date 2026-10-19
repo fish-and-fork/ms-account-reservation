@@ -113,6 +113,107 @@ paths:
               example:
                 errorCode: "CLIENT_NOT_FOUND"
                 errorDescription: "Клиент с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 не найден"
+    put:
+      tags:
+        - Clients
+      summary: Обновление клиента
+      operationId: updateClient
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: Внутренний идентификатор клиента
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientCreateRequest'
+            example:
+              mdmCode: 1234567890
+              firstName: "Иван"
+              lastName: "Петров"
+              middleName: "Сергеевич"
+              citizenship: "Russian Federation"
+              documentNumber: "111111"
+              documentSeries: "1111"
+              documentType: "Паспорт"
+      responses:
+        '200':
+          description: Клиент успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                mdmCode: 1234567890
+                firstName: "Иван"
+                lastName: "Петров"
+                middleName: "Сергеевич"
+                citizenship: "Russian Federation"
+                clientType: "ACTIVE"
+                documentNumber: "111111"
+                documentSeries: "1111"
+                createdAt: "2024-01-15T10:30:00Z"
+                updatedAt: "2024-01-15T10:30:00Z"
+        '400':
+          description: Невалидные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "VALIDATION_ERROR"
+                errorDescription: "Поле mdmCode обязательно"
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "CLIENT_NOT_FOUND"
+                errorDescription: "Клиент с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 не найден"
+    delete:
+      tags:
+        - Clients
+      summary: Удаление клиента по ID (soft delete)
+      operationId: deleteClientById
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: Внутренний идентификатор клиента
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      responses:
+        '204':
+          description: Клиент найден
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "CLIENT_NOT_FOUND"
+                errorDescription: "Клиент с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 не найден"
+        '409':
+          description: У клиента есть активные счета
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "CLIENT_HAS_ACTIVE_ACCOUNTS"
+                errorDescription: "У клиента с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 есть активные счета"
 
 components:
   schemas:

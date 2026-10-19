@@ -13,8 +13,7 @@ public class ApiException extends RuntimeException {
     }
 
     public ApiException(ApiError apiError, String details) {
-        super(details);
+        super(details); // для более детального лога
         this.apiError = apiError;
     }
-
 }
