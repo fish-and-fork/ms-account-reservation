@@ -1,6 +1,7 @@
 package com.example.ms_account_reservation.exception;
 
 import com.example.dto.ErrorResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpHeaders;
@@ -55,6 +56,27 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         ErrorResponse body = error.toResponse()
                 .details(List.of(detail));
+
+        return ResponseEntity.status(error.getStatusCode()).body(body);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException e) {
+        List<String> details = e.getConstraintViolations().stream()
+                .map(violation -> {
+                    String path = violation.getPropertyPath().toString();
+                    String field = path.contains(".") // например: "searchClients.size"
+                            ? path.substring(path.lastIndexOf('.') + 1)
+                            : path;
+                    return field + ": " + violation.getMessage();
+                })
+                .toList();
+
+        ApiError error = ApiError.VALIDATION_ERROR;
+        log.warn("Constraint violation: {}", details);
+
+        ErrorResponse body = error.toResponse()
+                .details(details);
 
         return ResponseEntity.status(error.getStatusCode()).body(body);
     }

@@ -71,6 +71,51 @@ paths:
               example:
                 errorCode: "CLIENT_ALREADY_EXISTS"
                 errorDescription: "Клиент с mdmCode=1234567890 уже существует"
+    get:
+      tags:
+        - Clients
+      summary: Поиск клиентов с пагинацией
+      operationId: searchClients
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы (начиная с 0)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: lastName
+          in: query
+          description: Фильтр по фамилии (частичное совпадение, case-insensitive)
+          required: false
+          schema:
+            type: string
+        - name: mdmCode
+          in: query
+          description: Фильтр по MDM-коду (точное совпадение)
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Страница клиентов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPage'
 
   /clients/{clientId}:
     get:
@@ -310,7 +355,7 @@ components:
         mdmCode:
           type: integer
           format: int64
-          description: Идентификатор в MDM
+          description: Уникальный идентификатор в мастер-системе (MDM)
           example: 1234567890
         firstName:
           type: string
@@ -387,6 +432,40 @@ components:
             - BLOCKED
             - DELETED
           example: "ACTIVE"
+
+    ClientPage:
+      type: object
+      required:
+        - content
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientResponse'
+        page:
+          type: integer
+          format: int32
+          description: Номер текущей страницы (0-based)
+        size:
+          type: integer
+          format: int32
+          description: Размер страницы
+        totalElements:
+          type: integer
+          format: int64
+          description: Всего элементов
+        totalPages:
+          type: integer
+          format: int32
+          description: Всего страниц
+        first:
+          type: boolean
+        last:
+          type: boolean
 
     ErrorResponse:
       type: object

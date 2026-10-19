@@ -2,6 +2,7 @@ package com.example.ms_account_reservation.service;
 
 import com.example.dto.ClientCreateRequest;
 import com.example.dto.ClientExistsResponse;
+import com.example.dto.ClientPage;
 import com.example.dto.ClientResponse;
 import com.example.ms_account_reservation.entity.Client;
 import com.example.ms_account_reservation.exception.ApiError;
@@ -9,11 +10,19 @@ import com.example.ms_account_reservation.exception.ApiException;
 import com.example.ms_account_reservation.mapper.ClientMapper;
 import com.example.ms_account_reservation.model.ClientType;
 import com.example.ms_account_reservation.repository.ClientRepository;
+import com.example.ms_account_reservation.specification.ClientSpecifications;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -46,6 +55,42 @@ public class ClientService {
         ClientResponse response = clientMapper.toResponse(client);
         response.setHasAccounts(false); // todo
         return response;
+    }
+
+    public ClientPage searchClients(int page, int size, @Nullable String lastName, @Nullable Long mdmCode) {
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(
+                        Sort.Order.asc("lastName"),
+                        Sort.Order.asc("firstName"),
+                        Sort.Order.asc("mdmCode")
+                )
+        );
+
+        Specification<Client> spec = Specification.allOf(
+                ClientSpecifications.notDeleted(),
+                ClientSpecifications.lastNameContains(lastName),
+                ClientSpecifications.hasMdmCode(mdmCode)
+        );
+
+        Page<Client> result = clientRepository.findAll(spec, pageable);
+
+        List<ClientResponse> content = result.getContent().stream()
+                .map(c -> {
+                    ClientResponse r = clientMapper.toResponse(c);
+                    r.setHasAccounts(false); // todo
+                    return r;
+                })
+                .toList();
+
+        ClientPage pageDto = new ClientPage();
+        pageDto.setContent(content);
+        pageDto.setPage(result.getNumber());
+        pageDto.setSize(result.getSize());
+        pageDto.setTotalElements(result.getTotalElements());
+        pageDto.setTotalPages(result.getTotalPages());
+        pageDto.setFirst(result.isFirst());
+        pageDto.setLast(result.isLast());
+        return pageDto;
     }
 
     public ClientExistsResponse checkClientExistence(UUID clientId) {
