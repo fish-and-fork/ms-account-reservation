@@ -22,7 +22,7 @@ spring:
 server:
   port: ${APP_PORT}
   servlet:
-    context-path: /api/v1
+    context-path: ${API_CONTEXT_PATH}
 
 management:
   server:
@@ -37,3 +37,9 @@ springdoc:
     enabled: false # отключает автоматическую генерацию из аннотаций, т.к. источник - yaml
   swagger-ui:
     url: /ms-upgrade-api.yaml
+
+app:
+  jwt:
+    expiration:
+      hours: 24
+    secret: ${JWT_SECRET}

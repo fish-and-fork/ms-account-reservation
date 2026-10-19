@@ -41,7 +41,6 @@ public class ClientController implements ClientsApi {
     @Override
     public ResponseEntity<ClientPage> searchClients(Integer page, Integer size,
                                                     @Nullable String lastName, @Nullable Long mdmCode) {
-
         ClientPage result = clientService.searchClients(
                 (page != null) ? page : 0,
                 (size != null) ? size : 20,

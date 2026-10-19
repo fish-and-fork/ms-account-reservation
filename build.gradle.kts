@@ -26,6 +26,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.54") // для аннотации @Schema в сгенерированных интерфейсах
     implementation("org.openapitools:jackson-databind-nullable:0.2.12") // для аннотации @JsonNullable там же
     implementation("org.mapstruct:mapstruct:1.6.3")
