@@ -1,6 +1,7 @@
 package com.example.ms_account_reservation.service;
 
 import com.example.dto.ClientCreateRequest;
+import com.example.dto.ClientExistsResponse;
 import com.example.dto.ClientResponse;
 import com.example.ms_account_reservation.entity.Client;
 import com.example.ms_account_reservation.exception.ApiError;
@@ -33,7 +34,7 @@ public class ClientService {
     public ClientResponse create(ClientCreateRequest clientCreateRequest) {
         checkIfMdmUnique(clientCreateRequest.getMdmCode());
         Client client = clientMapper.toEntity(clientCreateRequest);
-        Client savedClient = clientRepository.saveAndFlush(client); // flush чтобы обновить @UpdateTimestamp
+        Client savedClient = clientRepository.saveAndFlush(client); // flush, чтобы сразу был createdAt и updatedAt
         log.info("Клиент создан: id={}, mdmCode={}", savedClient.getId(), savedClient.getMdmCode());
         ClientResponse response = clientMapper.toResponse(savedClient);
         response.setHasAccounts(false);
@@ -43,7 +44,17 @@ public class ClientService {
     public ClientResponse get(UUID clientId) {
         Client client = getClientOrThrow(clientId);
         ClientResponse response = clientMapper.toResponse(client);
-        response.setHasAccounts(false);
+        response.setHasAccounts(false); // todo
+        return response;
+    }
+
+    public ClientExistsResponse checkClientExistence(UUID clientId) {
+        ClientExistsResponse response = new ClientExistsResponse();
+        clientRepository.findById(clientId).ifPresentOrElse((client) -> {
+            response.setExists(true);
+            response.setId(client.getId());
+            response.setClientType(ClientExistsResponse.ClientTypeEnum.valueOf(client.getClientType().name()));
+        }, () -> response.setExists(false));
         return response;
     }
 
@@ -54,7 +65,7 @@ public class ClientService {
         clientRepository.flush(); // чтобы обновить @UpdateTimestamp
         log.info("Клиент обновлён: id={}, mdmCode={}", client.getId(), client.getMdmCode());
         ClientResponse response = clientMapper.toResponse(client);
-        response.setHasAccounts(false);
+        response.setHasAccounts(false); // todo
         return response;
     }
 

@@ -2,6 +2,7 @@ package com.example.ms_account_reservation.controller;
 
 import com.example.api.ClientsApi;
 import com.example.dto.ClientCreateRequest;
+import com.example.dto.ClientExistsResponse;
 import com.example.dto.ClientResponse;
 import com.example.ms_account_reservation.service.ClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,5 +46,11 @@ public class ClientController implements ClientsApi {
     public ResponseEntity<Void> deleteClientById(UUID clientId) {
         clientService.delete(clientId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<ClientExistsResponse> checkClientExistence(UUID clientId) {
+        ClientExistsResponse response = clientService.checkClientExistence(clientId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

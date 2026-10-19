@@ -215,6 +215,33 @@ paths:
                 errorCode: "CLIENT_HAS_ACTIVE_ACCOUNTS"
                 errorDescription: "У клиента с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 есть активные счета"
 
+  /clients/{clientId}/exists:
+    get:
+      tags:
+        - Clients
+      summary: Проверка существования клиента
+      operationId: checkClientExistence
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: Внутренний идентификатор клиента
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      responses:
+        '200':
+          description: Найден ли клиент и также его базовая информация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientExistsResponse'
+              example:
+                exists: true
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                clientType: "ACTIVE"
+
 components:
   schemas:
     ClientCreateRequest:
@@ -335,6 +362,31 @@ components:
           type: boolean
           description: Наличие счетов у клиента (пока всегда false)
           example: false
+
+    ClientExistsResponse:
+      type: object
+      required:
+        - exists
+        - id
+        - clientType
+      properties:
+        exists:
+          type: boolean
+          description: Найден ли клиент
+          example: true
+        id:
+          type: string
+          format: uuid
+          description: Внутренний идентификатор клиента
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        clientType:
+          type: string
+          description: Статус клиента
+          enum:
+            - ACTIVE
+            - BLOCKED
+            - DELETED
+          example: "ACTIVE"
 
     ErrorResponse:
       type: object
