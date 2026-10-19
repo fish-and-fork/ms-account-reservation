@@ -25,6 +25,10 @@ public class ClientService {
     }
 
     public ClientResponse create(ClientCreateRequest clientCreateRequest) {
+        if (clientRepository.findByMdmCode(clientCreateRequest.getMdmCode()).isPresent()) {
+            throw new ApiException(ApiError.CLIENT_MDM_EXISTS,
+                    "Клиент с mdmCode=" + clientCreateRequest.getMdmCode() + "уже существует");
+        }
         Client client = clientMapper.toEntity(clientCreateRequest);
         Client savedClient = clientRepository.save(client);
         return clientMapper.toResponse(savedClient);

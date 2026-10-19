@@ -248,4 +248,12 @@ components:
         errorDescription:
           type: string
           description: Бизнес-описание ошибки
-          example: "Поле mdmCode обязательно"
+          example: "Невалидные данные запроса"
+        details:
+          type: array
+          description: Детальные сообщения (например, конкретные поля при невалидном запросе)
+          items:
+            type: string
+          x-jackson-json-include-policy: NON_EMPTY
+          example:
+            - "mdmCode: не должно равняться null"
