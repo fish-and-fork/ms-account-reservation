@@ -102,13 +102,12 @@ class ClientControllerSecurityIT {
 
     private SecretKey signingKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
-        // если секрет не в Base64 — Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8))
     }
 
     private String tokenWithExpiration(Instant expiresAt, String subject, List<String> roles) {
         return Jwts.builder()
                 .subject(subject)
-                .claim("roles", roles)           // ← имя claim должно совпадать с тем, что читает jwtFilter!
+                .claim("roles", roles)
                 .issuedAt(Date.from(expiresAt.minusSeconds(3600)))
                 .expiration(Date.from(expiresAt))
                 .signWith(signingKey(), Jwts.SIG.HS256)
