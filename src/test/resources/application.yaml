@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    driver-class-name: ${DB_DRIVER}
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: public
+    open-in-view: false
+
+app:
+  jwt:
+    expiration:
+      hours: 24
+    secret: ${JWT_SECRET}
