@@ -1,5 +1,6 @@
 package com.example.ms_account_reservation.repository;
 
+import com.example.ms_account_reservation.AbstractIntegrationTest;
 import com.example.ms_account_reservation.entity.Client;
 import com.example.ms_account_reservation.model.ClientType;
 import com.example.ms_account_reservation.specification.ClientSpecifications;
@@ -11,7 +12,6 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.util.Arrays;
@@ -21,8 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // отключает подмену на H2 (подменяется из-за @DataJpaTest)
-@Testcontainers
-class ClientRepositoryIT {
+class ClientRepositoryIT extends AbstractIntegrationTest {
 
     @Container
     @ServiceConnection

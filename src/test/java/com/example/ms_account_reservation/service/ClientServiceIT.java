@@ -2,6 +2,7 @@ package com.example.ms_account_reservation.service;
 
 import com.example.dto.ClientCreateRequest;
 import com.example.dto.ClientResponse;
+import com.example.ms_account_reservation.AbstractIntegrationTest;
 import com.example.ms_account_reservation.entity.Client;
 import com.example.ms_account_reservation.model.ClientType;
 import com.example.ms_account_reservation.repository.ClientRepository;
@@ -9,11 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.util.Arrays;
 
@@ -21,12 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest
-@Testcontainers
-class ClientServiceIT {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
+class ClientServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     ClientService clientService;
