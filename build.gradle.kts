@@ -32,6 +32,7 @@ dependencies {
     implementation("org.openapitools:jackson-databind-nullable:0.2.12") // для аннотации @JsonNullable там же
     implementation("org.mapstruct:mapstruct:1.6.3")
     implementation("io.micrometer:micrometer-registry-prometheus:1.17.2")
+    implementation("com.github.database-rider:rider-spring:1.44.0")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
     runtimeOnly("org.postgresql:postgresql")
@@ -43,6 +44,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter")
     testImplementation("org.testcontainers:testcontainers-postgresql")
+    testImplementation("com.github.database-rider:rider-junit5:1.44.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 }

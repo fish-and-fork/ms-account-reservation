@@ -4,6 +4,8 @@ import com.example.ms_account_reservation.AbstractIntegrationTest;
 import com.example.ms_account_reservation.entity.Client;
 import com.example.ms_account_reservation.model.ClientType;
 import com.example.ms_account_reservation.repository.ClientRepository;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@DBRider
 @AutoConfigureMockMvc(addFilters = false)
-@Transactional
 class ClientControllerIT extends AbstractIntegrationTest {
+
+    private static final String PACINO_ID = "393a74cc-b86d-4dfc-85f8-b922cf81e4d8";
 
     @Autowired
     protected MockMvc mockMvc;
@@ -34,9 +38,13 @@ class ClientControllerIT extends AbstractIntegrationTest {
     // === POST /clients ===
 
     @Test
+    // Тут DataSet по сути не нужен, но благодаря ему и empty.yaml таблица по умолчанию очистится перед вставкой
+    // И она останется пустой, т.к. список в yaml пустой
+    // Иначе тест падает из-за 409 при запуске всех тестов сразу (порядок меняется)
+    @DataSet(value = "datasets/clients/empty.yaml")
     void createClient_returns201AndBody() throws Exception {
         String body = createClientJson(100L, "Аль", "Пачино",
-                "1111", "111-111", " Паспорт");
+                "1111", "111-111", "Паспорт");
 
         mockMvc.perform(post("/clients")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -53,13 +61,13 @@ class ClientControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
+    @DataSet("datasets/clients/pacino.yaml")
     void createClient_withDuplicateMdmCode_returns409() throws Exception {
-        clientRepository.saveAndFlush(buildClient(100L, "Аль", "Пачино"));
 
         mockMvc.perform(post("/clients")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createClientJson(100L, "Сильвестр", "Сталлоне",
-                                "1111", "111-111", " Паспорт")))
+                                "1111", "111-111", "Паспорт")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorCode").exists());
     }
@@ -75,13 +83,12 @@ class ClientControllerIT extends AbstractIntegrationTest {
     // === GET /clients/{clientId} ===
 
     @Test
+    @DataSet("datasets/clients/pacino.yaml")
     void getClientById_returns200() throws Exception {
-        Client saved = clientRepository.saveAndFlush(buildClient(100L, "Аль", "Пачино"));
-
-        mockMvc.perform(get("/clients/{id}", saved.getId())
+        mockMvc.perform(get("/clients/{id}", PACINO_ID)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(saved.getId().toString()))
+                .andExpect(jsonPath("$.id").value(PACINO_ID))
                 .andExpect(jsonPath("$.mdmCode").value(100))
                 .andExpect(jsonPath("$.hasAccounts").value(false)); // todo
     }
@@ -96,16 +103,15 @@ class ClientControllerIT extends AbstractIntegrationTest {
     // === GET /clients/{clientId}/exists ===
 
     @Test
+    @DataSet("datasets/clients/pacino.yaml")
     void checkClientExistence_whenExists_returns200WithDetails() throws Exception {
-        ClientType type = anyNonDeletedType();
-        Client saved = clientRepository.saveAndFlush(buildClient(100L, type, "Аль", "Пачино"));
 
-        mockMvc.perform(get("/clients/{id}/exists", saved.getId())
+        mockMvc.perform(get("/clients/{id}/exists", PACINO_ID)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.exists").value(true))
-                .andExpect(jsonPath("$.id").value(saved.getId().toString()))
-                .andExpect(jsonPath("$.clientType").value(type.name()));
+                .andExpect(jsonPath("$.id").value(PACINO_ID))
+                .andExpect(jsonPath("$.clientType").value("ACTIVE"));
     }
 
     @Test
@@ -121,9 +127,8 @@ class ClientControllerIT extends AbstractIntegrationTest {
     // === GET /clients ===
 
     @Test
+    @DataSet({"datasets/clients/pacino.yaml", "datasets/clients/stallone.yaml"})
     void searchClients_returnsPageWithFilters() throws Exception {
-        clientRepository.saveAndFlush(buildClient(100L, "Аль", "Пачино"));
-        clientRepository.saveAndFlush(buildClient(200L, "Сильвестр", "Сталлоне"));
 
         mockMvc.perform(get("/clients")
                         .param("lastName", "Пачино")   // проверяем case-insensitive
@@ -144,28 +149,25 @@ class ClientControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
+    @DataSet({"datasets/clients/pacino.yaml", "datasets/clients/soft_deleted/stallone.yaml"})
     void searchClients_excludesSoftDeletedClients() throws Exception {
-        Client alive = clientRepository.saveAndFlush(buildClient(100L, "Аль", "Пачино"));
-        Client deleted = clientRepository.saveAndFlush(buildClient(200L, "Сильвестр", "Сталлоне"));
-        deleted.setClientType(ClientType.DELETED);
-        clientRepository.flush();
 
         mockMvc.perform(get("/clients").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].id").value(alive.getId().toString()));
+                .andExpect(jsonPath("$.content[0].id").value(PACINO_ID));
     }
 
     // === PUT /clients/{clientId} ===
 
     @Test
+    @DataSet("datasets/clients/pacino.yaml")
     void updateClient_returns200() throws Exception {
-        Client saved = clientRepository.saveAndFlush(buildClient(100L, "Аль", "Пачино"));
 
-        mockMvc.perform(put("/clients/{id}", saved.getId())
+        mockMvc.perform(put("/clients/{id}", PACINO_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createClientJson(100L, "Сильвестр", "Сталлоне",
-                                "1111", "111-111", " Паспорт")))
+                                "1111", "111-111", "Паспорт")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value("Сильвестр"))
                 .andExpect(jsonPath("$.lastName").value("Сталлоне"));
@@ -176,17 +178,17 @@ class ClientControllerIT extends AbstractIntegrationTest {
         mockMvc.perform(put("/clients/{id}", UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createClientJson(100L, "Аль", "Пачино",
-                                "1111", "111-111", " Паспорт")))
+                                "1111", "111-111", "Паспорт")))
                 .andExpect(status().isNotFound());
     }
 
     // === DELETE /clients/{clientId} ===
 
     @Test
+    @DataSet("datasets/clients/pacino.yaml")
     void deleteClient_returns204_andExcludesFromSearch() throws Exception {
-        Client saved = clientRepository.saveAndFlush(buildClient(100L, "Аль", "Пачино"));
 
-        mockMvc.perform(delete("/clients/{id}", saved.getId()))
+        mockMvc.perform(delete("/clients/{id}", PACINO_ID))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/clients").accept(MediaType.APPLICATION_JSON))
@@ -200,11 +202,11 @@ class ClientControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
+    @DataSet("datasets/clients/pacino.yaml")
     void deleteClient_isIdempotent() throws Exception {
-        Client saved = clientRepository.saveAndFlush(buildClient(100L, "Аль", "Пачино"));
 
-        mockMvc.perform(delete("/clients/{id}", saved.getId())).andExpect(status().isNoContent());
-        mockMvc.perform(delete("/clients/{id}", saved.getId())).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/clients/{id}", PACINO_ID)).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/clients/{id}", PACINO_ID)).andExpect(status().isNoContent());
     }
 
     // ======

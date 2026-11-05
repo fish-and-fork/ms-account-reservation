@@ -28,10 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class ClientControllerSecurityIT extends AbstractIntegrationTest {
 
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
-
     @Autowired MockMvc mockMvc;
 
     @Value("${app.jwt.secret}")

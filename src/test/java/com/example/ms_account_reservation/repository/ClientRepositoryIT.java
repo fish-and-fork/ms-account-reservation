@@ -23,10 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // отключает подмену на H2 (подменяется из-за @DataJpaTest)
 class ClientRepositoryIT extends AbstractIntegrationTest {
 
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
-
     @Autowired
     ClientRepository clientRepository;
 
