@@ -31,6 +31,7 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-annotations:2.2.54") // для аннотации @Schema в сгенерированных интерфейсах
     implementation("org.openapitools:jackson-databind-nullable:0.2.12") // для аннотации @JsonNullable там же
     implementation("org.mapstruct:mapstruct:1.6.3")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.17.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
     runtimeOnly("org.postgresql:postgresql")
