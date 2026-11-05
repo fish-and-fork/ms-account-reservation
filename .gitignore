@@ -5,6 +5,7 @@ target/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+gradle/libs.versions.toml
 
 ### STS ###
 .apt_generated
