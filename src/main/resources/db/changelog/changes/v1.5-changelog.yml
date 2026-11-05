@@ -1,0 +1,17 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 012-add-mdm-code-index
+      author: fish-and-fork
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists:
+                indexName: idx_client_mdm_code
+      changes:
+        - createIndex:
+            tableName: client
+            indexName: idx_client_mdm_code
+            columns:
+              - column:
+                  name: mdm_code
