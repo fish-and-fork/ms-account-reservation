@@ -31,13 +31,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .toList();
 
-        ApiError error = ApiError.VALIDATION_ERROR;
         log.debug("Validation failed: {}", details, ex);
 
-        ErrorResponse body = error.toResponse()
+        ErrorResponse body = ApiError.VALIDATION_ERROR.toResponse()
                 .details(details);
 
-        return ResponseEntity.status(error.getStatusCode()).body(body);
+        return ResponseEntity.status(ApiError.VALIDATION_ERROR.getStatusCode()).body(body);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -54,10 +53,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError error = ApiError.INVALID_REQUEST_PARAMETER;
         log.debug("Type mismatch: {}", detail, e);
 
-        ErrorResponse body = error.toResponse()
+        ErrorResponse body = ApiError.INVALID_REQUEST_PARAMETER.toResponse()
                 .details(List.of(detail));
 
-        return ResponseEntity.status(error.getStatusCode()).body(body);
+        return ResponseEntity.status(ApiError.INVALID_REQUEST_PARAMETER.getStatusCode()).body(body);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -72,13 +71,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 })
                 .toList();
 
-        ApiError error = ApiError.VALIDATION_ERROR;
         log.warn("Constraint violation: {}", details);
 
-        ErrorResponse body = error.toResponse()
-                .details(details);
+        ErrorResponse body = ApiError.VALIDATION_ERROR.toResponse().details(details);
 
-        return ResponseEntity.status(error.getStatusCode()).body(body);
+        return ResponseEntity.status(ApiError.VALIDATION_ERROR.getStatusCode()).body(body);
     }
 
     @ExceptionHandler(ApiException.class)
@@ -88,5 +85,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(error.getStatusCode())
                 .body(error.toResponse());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        log.error("Unhandled exception", e);
+        ErrorResponse body = ApiError.INTERNAL_ERROR.toResponse();
+        return ResponseEntity.status(ApiError.INTERNAL_ERROR.getStatusCode()).body(body);
     }
 }

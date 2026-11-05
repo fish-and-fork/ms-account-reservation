@@ -11,12 +11,13 @@ public enum ApiError {
     INVALID_REQUEST_PARAMETER("INVALID_REQUEST_PARAMETER", "Неверный формат параметра запроса", HttpStatus.BAD_REQUEST),
     CLIENT_NOT_FOUND("CLIENT_NOT_FOUND", "Клиент не найден", HttpStatus.NOT_FOUND),
     CLIENT_MDM_EXISTS("CLIENT_MDM_EXISTS", "Клиент с таким mdmId уже существует", HttpStatus.CONFLICT),
-    CLIENT_HAS_ACTIVE_ACCOUNTS("CLIENT_HAS_ACTIVE_ACCOUNTS", "У клиента есть активные счета", HttpStatus.CONFLICT)
+    CLIENT_HAS_ACTIVE_ACCOUNTS("CLIENT_HAS_ACTIVE_ACCOUNTS", "У клиента есть активные счета", HttpStatus.CONFLICT),
+    INTERNAL_ERROR("INTERNAL_ERROR", "Ошибка на стороне сервиса", HttpStatus.INTERNAL_SERVER_ERROR)
     ;
 
-    private final String errorCode;
-    private final String errorDescription;
-    private final HttpStatus statusCode;
+    public final String errorCode;
+    public final String errorDescription;
+    public final HttpStatus statusCode;
 
     ApiError(String errorCode, String errorDescription, HttpStatus statusCode) {
         this.errorCode = errorCode;
