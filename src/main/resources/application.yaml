@@ -46,3 +46,7 @@ app:
     expiration:
       hours: 24
     secret: ${JWT_SECRET}
+
+logging:
+  filter:
+    include-paths: /clients/**
