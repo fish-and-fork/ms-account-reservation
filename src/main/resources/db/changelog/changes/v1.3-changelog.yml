@@ -1,0 +1,66 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 008-add-separate-name-columns
+      author: fish-and-fork
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: client
+                columnName: first_name
+            - columnExists:
+                tableName: client
+                columnName: last_name
+            - columnExists:
+                tableName: client
+                columnName: middle_name
+      changes:
+        - addColumn:
+            tableName: client
+            columns:
+              - column:
+                  name: first_name
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: middle_name
+                  type: TEXT
+
+  - changeSet:
+      id: 009-split-full_name-in-client
+      author: fish-and-fork
+      changes:
+        - update:
+            tableName: client
+            columns:
+              - column:
+                  name: first_name
+                  valueComputed: "split_part(full_name, ' ', 1)"
+              - column:
+                  name: last_name
+                  valueComputed: "split_part(full_name, ' ', 2)"
+              - column:
+                  name: middle_name
+                  valueComputed: "split_part(full_name, ' ', 3)"
+
+  - changeSet:
+      id: 010-drop-full_name-from-client
+      author: fish-and-fork
+      changes:
+        - dropColumn:
+            tableName: client
+            columnName: full_name
+      rollback:
+        - addColumn:
+            tableName: client
+            columns:
+              - column:
+                  name: full_name
+                  type: TEXT

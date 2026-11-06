@@ -1,0 +1,491 @@
+openapi: 3.0.3
+info:
+  title: Clients API
+  description: API для управления клиентами
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+
+tags:
+  - name: Clients
+    description: Операции с клиентами
+
+paths:
+
+  /clients:
+    post:
+      tags:
+        - Clients
+      summary: Создание нового клиента
+      operationId: createClient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientCreateRequest'
+            example:
+              mdmCode: 1234567890
+              firstName: "Иван"
+              lastName: "Петров"
+              middleName: "Сергеевич"
+              citizenship: "Russian Federation"
+              documentNumber: "111111"
+              documentSeries: "1111"
+              documentType: "Паспорт"
+      responses:
+        '201':
+          description: Клиент успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                mdmCode: 1234567890
+                firstName: "Иван"
+                lastName: "Петров"
+                middleName: "Сергеевич"
+                citizenship: "Russian Federation"
+                clientType: "ACTIVE"
+                documentNumber: "111111"
+                documentSeries: "1111"
+                createdAt: "2024-01-15T10:30:00Z"
+                updatedAt: "2024-01-15T10:30:00Z"
+        '400':
+          description: Невалидные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "VALIDATION_ERROR"
+                errorDescription: "Поле mdmCode обязательно"
+        '409':
+          description: Клиент с таким mdmCode уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "CLIENT_ALREADY_EXISTS"
+                errorDescription: "Клиент с mdmCode=1234567890 уже существует"
+    get:
+      tags:
+        - Clients
+      summary: Поиск клиентов с пагинацией
+      operationId: searchClients
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы (начиная с 0)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: lastName
+          in: query
+          description: Фильтр по фамилии (частичное совпадение, case-insensitive)
+          required: false
+          schema:
+            type: string
+        - name: mdmCode
+          in: query
+          description: Фильтр по MDM-коду (точное совпадение)
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Страница клиентов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPage'
+
+  /clients/{clientId}:
+    get:
+      tags:
+        - Clients
+      summary: Получение клиента по ID
+      operationId: getClientById
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: Внутренний идентификатор клиента
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      responses:
+        '200':
+          description: Клиент найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                mdmCode: 1234567890
+                firstName: "Иван"
+                lastName: "Петров"
+                middleName: "Сергеевич"
+                clientType: "ACTIVE"
+                createdAt: "2024-01-15T10:30:00Z"
+                updatedAt: "2024-01-15T10:30:00Z"
+                hasAccounts: false
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "CLIENT_NOT_FOUND"
+                errorDescription: "Клиент с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 не найден"
+    put:
+      tags:
+        - Clients
+      summary: Обновление клиента
+      operationId: updateClient
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: Внутренний идентификатор клиента
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientCreateRequest'
+            example:
+              mdmCode: 1234567890
+              firstName: "Иван"
+              lastName: "Петров"
+              middleName: "Сергеевич"
+              citizenship: "Russian Federation"
+              documentNumber: "111111"
+              documentSeries: "1111"
+              documentType: "Паспорт"
+      responses:
+        '200':
+          description: Клиент успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                mdmCode: 1234567890
+                firstName: "Иван"
+                lastName: "Петров"
+                middleName: "Сергеевич"
+                citizenship: "Russian Federation"
+                clientType: "ACTIVE"
+                documentNumber: "111111"
+                documentSeries: "1111"
+                createdAt: "2024-01-15T10:30:00Z"
+                updatedAt: "2024-01-15T10:30:00Z"
+        '400':
+          description: Невалидные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "VALIDATION_ERROR"
+                errorDescription: "Поле mdmCode обязательно"
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "CLIENT_NOT_FOUND"
+                errorDescription: "Клиент с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 не найден"
+    delete:
+      tags:
+        - Clients
+      summary: Удаление клиента по ID (soft delete)
+      operationId: deleteClientById
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: Внутренний идентификатор клиента
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      responses:
+        '204':
+          description: Клиент найден
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "CLIENT_NOT_FOUND"
+                errorDescription: "Клиент с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 не найден"
+        '409':
+          description: У клиента есть активные счета
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: "CLIENT_HAS_ACTIVE_ACCOUNTS"
+                errorDescription: "У клиента с id=a1b2c3d4-e5f6-7890-abcd-ef1234567890 есть активные счета"
+
+  /clients/{clientId}/exists:
+    get:
+      tags:
+        - Clients
+      summary: Проверка существования клиента
+      operationId: checkClientExistence
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: Внутренний идентификатор клиента
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      responses:
+        '200':
+          description: Найден ли клиент и также его базовая информация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientExistsResponse'
+              example:
+                exists: true
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                clientType: "ACTIVE"
+
+components:
+  schemas:
+    ClientCreateRequest:
+      type: object
+      required:
+        - mdmCode
+        - firstName
+        - lastName
+        - documentNumber
+        - documentSeries
+        - documentType
+      properties:
+        mdmCode:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор в мастер-системе (MDM)
+          example: 1234567890
+        firstName:
+          type: string
+          description: Имя
+          example: "Иван"
+        lastName:
+          type: string
+          description: Фамилия
+          example: "Петров"
+        middleName:
+          type: string
+          description: Отчество (опционально)
+          example: "Сергеевич"
+        citizenship:
+          type: string
+          description: Гражданство
+          example: "Russian Federation"
+        documentNumber:
+          type: string
+          description: Номер документа
+          example: "111111"
+        documentSeries:
+          type: string
+          description: Серия документа
+          example: "1111"
+        documentType:
+          type: string
+          description: Тип документа
+          example: "Паспорт"
+
+    ClientResponse:
+      type: object
+      required:
+        - id
+        - mdmCode
+        - firstName
+        - lastName
+        - documentNumber
+        - documentSeries
+        - documentType
+        - clientType
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Внутренний идентификатор клиента
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        mdmCode:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор в мастер-системе (MDM)
+          example: 1234567890
+        firstName:
+          type: string
+          description: Имя
+          example: "Иван"
+        lastName:
+          type: string
+          description: Фамилия
+          example: "Петров"
+        middleName:
+          type: string
+          description: Отчество
+          example: "Сергеевич"
+        citizenship:
+          type: string
+          description: Гражданство
+          example: "Russian Federation"
+        clientType:
+          type: string
+          description: Статус клиента
+          enum:
+            - ACTIVE
+            - BLOCKED
+            - DELETED
+          example: "ACTIVE"
+        documentNumber:
+          type: string
+          description: Номер документа
+          example: "111111"
+        documentSeries:
+          type: string
+          description: Серия документа
+          example: "1111"
+        documentType:
+          type: string
+          description: Тип документа
+          example: "Паспорт"
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата и время создания
+          example: "2024-01-15T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Дата и время последнего обновления
+          example: "2024-01-15T10:30:00Z"
+        hasAccounts:
+          type: boolean
+          description: Наличие счетов у клиента (пока всегда false)
+          example: false
+
+    ClientExistsResponse:
+      type: object
+      required:
+        - exists
+        - id
+        - clientType
+      properties:
+        exists:
+          type: boolean
+          description: Найден ли клиент
+          example: true
+        id:
+          type: string
+          format: uuid
+          description: Внутренний идентификатор клиента
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        clientType:
+          type: string
+          description: Статус клиента
+          enum:
+            - ACTIVE
+            - BLOCKED
+            - DELETED
+          example: "ACTIVE"
+
+    ClientPage:
+      type: object
+      required:
+        - content
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientResponse'
+        page:
+          type: integer
+          format: int32
+          description: Номер текущей страницы (0-based)
+        size:
+          type: integer
+          format: int32
+          description: Размер страницы
+        totalElements:
+          type: integer
+          format: int64
+          description: Всего элементов
+        totalPages:
+          type: integer
+          format: int32
+          description: Всего страниц
+        first:
+          type: boolean
+        last:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - errorDescription
+      properties:
+        errorCode:
+          type: string
+          description: Текстовый мнемокод
+          example: "VALIDATION_ERROR"
+        errorDescription:
+          type: string
+          description: Бизнес-описание ошибки
+          example: "Невалидные данные запроса"
+        details:
+          type: array
+          description: Детальные сообщения (например, конкретные поля при невалидном запросе)
+          items:
+            type: string
+          x-jackson-json-include-policy: NON_EMPTY
+          example:
+            - "mdmCode: не должно равняться null"

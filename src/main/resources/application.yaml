@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: ${APP_NAME}
+  datasource:
+    password: ${DB_PASSWORD}
+    username: ${DB_USER}
+    url: ${DB_URL}
+    driver-class-name: ${DB_DRIVER}
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+    enabled: true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        highlight_sql: true
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+server:
+  port: ${APP_PORT}
+  servlet:
+    context-path: ${API_CONTEXT_PATH}
+
+management:
+  server:
+    port: ${MANAGEMENT_PORT}
+  endpoints:
+    web:
+      exposure:
+        include: health, threaddump, prometheus
+  metrics:
+    tags:
+      application: "ms-account-reservation"
+
+springdoc:
+  api-docs:
+    enabled: false # отключает автоматическую генерацию из аннотаций, т.к. источник - yaml
+  swagger-ui:
+    url: /ms-upgrade-api.yaml
+
+app:
+  jwt:
+    expiration:
+      hours: 24
+    secret: ${JWT_SECRET}
+
+logging:
+  filter:
+    include-paths: /clients/**

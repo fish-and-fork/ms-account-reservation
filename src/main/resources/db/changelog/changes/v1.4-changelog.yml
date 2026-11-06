@@ -1,0 +1,10 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 011-add-unique-constraint-mdm-code
+      author: fish-and-fork
+      changes:
+        - addUniqueConstraint:
+            tableName: client
+            columnNames: mdm_code
+            constraintName: uq_client_mdm_code
